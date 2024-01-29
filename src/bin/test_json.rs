@@ -1,6 +1,14 @@
 pub fn main() {
     let s = "123.123";
     println!("{:?}", s.char_indices());
+    let mut s1 = String::from("123456");
+    let s2: &mut str = &mut s1;
+    let mut s2ptr = s2.as_mut_ptr();    
+    unsafe {
+        s2ptr = s2ptr.offset(1);
+    }
+    // println!("{:?}", s2ptr.as_mut());
+
     let yes = "y̆es";
     let subs = &yes[1..3];
     println!("{}, len: {}", yes, yes.len());
@@ -17,4 +25,12 @@ pub fn main() {
     println!("{:?}", indices.next());
     println!("{:?}", indices.next());
     println!("a{}b", indices.next().unwrap().1);
+    
+    // let mut ptr = yes.as_mut_ptr();
+    // unsafe {
+    //     ptr = ptr.offset(1);
+    // }
+    // let a = unsafe { &*ptr };
+    // println!("const string: {}", a);
+    
 }
