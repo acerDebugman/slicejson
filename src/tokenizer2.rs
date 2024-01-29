@@ -1,22 +1,22 @@
 use std::{iter::Peekable, str::CharIndices};
 
-pub struct CharPos {
-    pub ch: char,
-    pub offset: usize,
+struct CharPos {
+    ch: char,
+    offset: usize,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
-pub struct PosRange {
-    pub start: usize,
-    pub end: usize, //exclusive
+struct Range {
+    start: usize,
+    end: usize,
 }
 
-pub struct Tokenizer<'input> {
+struct Tokenizer<'input> {
     s: &'input str,
-    pub peak: Peekable<CharIndices<'input>>,
-    pub ch: Option<CharPos>,
+    peak: Peekable<CharIndices<'input>>,
+    ch: Option<CharPos>,
     bak_ch: Option<CharPos>,
-    pub str_token: Vec<usize>,
+    str_token: Vec<usize>,
+    sym_table: HashMap<String, String>,
 }
 
 impl<'input> Tokenizer<'input> {
@@ -50,16 +50,6 @@ impl<'input> Tokenizer<'input> {
         self.str_token.push(ch.unwrap().offset);
     }
 
-    pub fn skip_bc(&mut self) {
-        while self.ch.as_ref().unwrap().ch == '\u{20}'
-            || self.ch.as_ref().unwrap().ch == '\n'
-            || self.ch.as_ref().unwrap().ch == '\r'
-            || self.ch.as_ref().unwrap().ch == '\t'
-        {
-            self.get_char();
-        }
-    }
-
     pub fn is_digit(&self) -> bool {
         if '0' <= self.ch.as_ref().unwrap().ch && self.ch.as_ref().unwrap().ch <= '9' {
             return true;
@@ -69,7 +59,7 @@ impl<'input> Tokenizer<'input> {
 
     pub fn is_letter(&self) -> bool {
         if ('a' <= self.ch.as_ref().unwrap().ch && self.ch.as_ref().unwrap().ch <= 'z')
-            || ('A' <= self.ch.as_ref().unwrap().ch && self.ch.as_ref().unwrap().ch <= 'Z')
+            || ('A' <= self.ch.as_ref().unwrap().ch && self.ch.as_ref().unwrap().ch <= 'Z') 
         {
             return true;
         }
@@ -82,9 +72,18 @@ impl<'input> Tokenizer<'input> {
         self.str_token.pop();
     }
 
-    pub fn reserve(&mut self) {}
+    pub fn reserve(&mut self) {
+        
+    }
 
-    pub fn insert_id(&mut self) {}
+    pub fn insert_id(&mut self) {
 
-    pub fn insert_const(&mut self) {}
+    }
+
+    pub fn insert_const(&mut self) {
+
+    }
+
+    
+
 }
