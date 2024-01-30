@@ -1,36 +1,39 @@
 pub fn main() {
-    let s = "123.123";
-    println!("{:?}", s.char_indices());
-    let mut s1 = String::from("123456");
-    let s2: &mut str = &mut s1;
-    let mut s2ptr = s2.as_mut_ptr();    
-    unsafe {
-        s2ptr = s2ptr.offset(1);
-    }
-    // println!("{:?}", s2ptr.as_mut());
-
-    let yes = "y̆es";
-    let subs = &yes[1..3];
-    println!("{}, len: {}", yes, yes.len());
-    println!("subs: {:?}", subs);
-
-    let c: char = yes.chars().nth(0).unwrap(); //char类型是4字节!
-    let a = &c; //char 无法转回 &str
-    println!("{:?}", yes.chars().nth(0));
-    let mut peak = yes.char_indices().peekable();
-    let a = peak.peek();
-    peak.nth_back(1);
-    let mut indices = yes.char_indices();
-    println!("{:?}", indices.next());
-    println!("{:?}", indices.next());
-    println!("{:?}", indices.next());
-    println!("a{}b", indices.next().unwrap().1);
-    
-    // let mut ptr = yes.as_mut_ptr();
-    // unsafe {
-    //     ptr = ptr.offset(1);
+    // let data = r#"
+    // {
+    //     "zgc": null,
+    //     "zgc": -0.03e+10,
+    //     "zgc": false,
+    //     "zgc": true,
+    //     "zgc": {"kkk2":"abc"},
+    //     "zgc": ["kkk2","abc"]
     // }
-    // let a = unsafe { &*ptr };
-    // println!("const string: {}", a);
-    
+    // "#;
+    // let data = r#"{"zgc":"kkk"}"#;
+    // let data = r#"
+    // [
+    //     {"zgc": null,
+    //     "zgc": -0.03e+10,
+    //     "zgc": false,
+    //     "zgc": true,
+    //     "zgc": {"kkk2":"abc"},
+    //     "zgc": ["kkk2","abc"]}
+    // ]
+    // "#;
+    // let data = r#"
+    // [
+    //     "zgc", "ab c  ", true, false, 123.10, 0, -0
+    // ]
+    // "#;
+    // let data = "-0";
+    let data = "-0.0";
+    println!("data: {:?}", data);
+    let v = slicejson::parser::parse(data);
+
+    println!("Value: {:?}", v);
+    println!("****show:");
+    v.show(data);
+
+    println!("parse again:");
+    let _ = slicejson::parser::parse(&v.to_string(data));
 }

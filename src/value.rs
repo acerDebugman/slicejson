@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 use crate::tokenizer::PosRange;
 
@@ -20,12 +20,9 @@ use crate::tokenizer::PosRange;
 //         Self::Array(arr)
 //     }
 //     pub fn string(s: &'a str) -> Value<'a> {
-//         Self::String(s) 
+//         Self::String(s)
 //     }
 // }
-
-
-
 
 #[derive(Clone, Debug)]
 pub enum Value {
@@ -42,7 +39,48 @@ impl Value {
         Self::Array(arr)
     }
     pub fn string(s: PosRange) -> Value {
-        Self::String(s) 
+        Self::String(s)
+    }
+
+    pub fn _show(&self, data: &str) -> String {
+        let mut ret = String::new();
+        match self {
+            Value::String(range) => {
+                ret.push('"');
+                ret.push_str(&data[range.start..range.end + 1]);
+                ret.push('"');
+            }
+            Value::Object(map) => {
+                ret.push('{');
+                for (k, v) in map.iter() {
+                    let key = data[k.start..k.end + 1].to_string();
+                    let value = v._show(data);
+                    ret.push_str(&format!("\"{}\":{},", key, value));
+                }
+                ret.pop();
+                ret.push('}');
+            }
+            Value::Array(arr) => {
+                ret.push('[');
+                for v in arr.iter() {
+                    let v = v._show(data);
+                    ret.push_str(&v);
+                    ret.push(',');
+                }
+                ret.pop();
+                ret.push(']');
+            }
+        }
+        ret
+    }
+
+    pub fn show(&self, data: &str) {
+        let ret = self._show(data);
+        println!("{:?}", ret);
+    }
+
+    pub fn to_string(&self, data: &str) -> String {
+        self._show(data)
     }
 }
 
