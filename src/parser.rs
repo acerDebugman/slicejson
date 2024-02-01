@@ -1,8 +1,11 @@
+use regex::Regex;
+
 use crate::{
     tokenizer::{self, PosRange, Tokenizer},
     value::Value,
 };
 use std::collections::HashMap;
+
 
 pub fn parse<'a>(s: &'a str) -> Value {
     //continuous empty string
@@ -19,7 +22,7 @@ pub fn process<'a>(toker: &'a mut Tokenizer) -> Value {
         return Value::default();
     }
     toker.skip_bc();
-    // println!("xxx: {:?}", toker);
+    // println!("xxx: {:?}", toker.ch);
     if toker.ch.as_ref().unwrap().ch == '{' {
         return proc_object(toker);
     }
@@ -84,7 +87,9 @@ fn proc_number<'a>(toker: &'a mut Tokenizer) -> Value {
             toker.get_char();
         }
     }
-    if toker.ch.is_some() && (toker.ch.as_ref().unwrap().ch == 'E' || toker.ch.as_ref().unwrap().ch == 'e') {
+    if toker.ch.is_some()
+        && (toker.ch.as_ref().unwrap().ch == 'E' || toker.ch.as_ref().unwrap().ch == 'e')
+    {
         toker.concat();
         toker.get_char();
         if toker.ch.as_ref().unwrap().ch == '-' || toker.ch.as_ref().unwrap().ch == '+' {
@@ -105,6 +110,7 @@ fn proc_array<'a>(toker: &'a mut Tokenizer) -> Value {
     toker.get_char();
     toker.skip_bc();
     if toker.ch.as_ref().unwrap().ch == ']' {
+        toker.get_char();
         return Value::Array(vec![]);
     }
     let mut arr = vec![];
@@ -126,6 +132,7 @@ fn proc_string<'a>(toker: &'a mut Tokenizer) -> Value {
     if toker.ch.as_ref().unwrap().ch == '"' {
         let offset = toker.ch.as_ref().unwrap().offset;
         let pos_range = PosRange::new(offset, offset);
+        toker.get_char();
         return Value::String(pos_range);
     }
     while toker.ch.as_ref().unwrap().ch != '"' {
@@ -144,6 +151,7 @@ fn proc_object<'a>(toker: &'a mut Tokenizer) -> Value {
     toker.get_char();
     toker.skip_bc();
     if toker.ch.as_ref().unwrap().ch == '}' {
+        toker.get_char();
         let map = HashMap::new();
         return Value::object(map);
     }

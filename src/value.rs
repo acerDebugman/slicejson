@@ -48,6 +48,10 @@ impl Value {
             Value::String(range) => {
                 ret.push('"');
                 ret.push_str(&data[range.start..range.end + 1]);
+                //"" take second " offset
+                if range.start == range.end {
+                    ret.pop();
+                }
                 ret.push('"');
             }
             Value::Object(map) => {
@@ -57,7 +61,9 @@ impl Value {
                     let value = v._show(data);
                     ret.push_str(&format!("\"{}\":{},", key, value));
                 }
-                ret.pop();
+                if !map.is_empty() {
+                    ret.pop();
+                }
                 ret.push('}');
             }
             Value::Array(arr) => {
@@ -67,7 +73,9 @@ impl Value {
                     ret.push_str(&v);
                     ret.push(',');
                 }
-                ret.pop();
+                if !arr.is_empty() {
+                    ret.pop();
+                }
                 ret.push(']');
             }
         }

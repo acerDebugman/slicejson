@@ -19,7 +19,7 @@ impl PosRange {
 
 #[derive(Debug)]
 pub struct Tokenizer<'input> {
-    s: &'input str,
+    pub s: &'input str,
     pub peek: Peekable<CharIndices<'input>>,
     pub ch: Option<CharPos>,
     bak_ch: Option<CharPos>,
@@ -99,13 +99,6 @@ impl<'input> Tokenizer<'input> {
             },
             _ => return false,
         }
-        // if self.ch.is_none() {
-        //     return false;
-        // }
-        // if '0' <= self.ch.as_ref().unwrap().ch && self.ch.as_ref().unwrap().ch <= '9' {
-        //     return true;
-        // }
-        // return false;
     }
 
     pub fn is_letter(&self) -> bool {
