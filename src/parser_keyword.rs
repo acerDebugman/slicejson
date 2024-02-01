@@ -1,13 +1,18 @@
-use regex::Regex;
 use crate::{
     tokenizer::{self, PosRange, Tokenizer},
     value::Value,
 };
+use regex::Regex;
 use std::collections::HashMap;
 
 //这里ret变为：&'a mut Vec<String> 就没有问题
 //只用'a,'b,'c 个不同的生命周期才行
-pub fn parse_with_regex<'a>(s: &'a str, keyword: &Regex, regex: &Regex, ret: &mut Vec<&'a str>) -> Value {
+pub fn parse_with_regex<'a>(
+    s: &'a str,
+    keyword: &Regex,
+    regex: &Regex,
+    ret: &mut Vec<&'a str>,
+) -> Value {
     //continuous empty string
     if s.is_empty() {
         return Value::default();
@@ -17,7 +22,14 @@ pub fn parse_with_regex<'a>(s: &'a str, keyword: &Regex, regex: &Regex, ret: &mu
     process(&mut toker, false, false, keyword, regex, ret)
 }
 
-fn process<'a, 'input>(toker: &'a mut Tokenizer<'input>, is_key: bool, is_key_matched: bool, keyword: &Regex, regex: &Regex, ret: &'a mut Vec<&'input str>) -> Value {
+fn process<'a, 'input>(
+    toker: &'a mut Tokenizer<'input>,
+    is_key: bool,
+    is_key_matched: bool,
+    keyword: &Regex,
+    regex: &Regex,
+    ret: &'a mut Vec<&'input str>,
+) -> Value {
     if toker.ch.is_none() {
         return Value::default();
     }
@@ -44,7 +56,14 @@ fn process<'a, 'input>(toker: &'a mut Tokenizer<'input>, is_key: bool, is_key_ma
     )
 }
 
-fn proc_bool_null<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_matched: bool, _keyword: &Regex, regex: &Regex, ret: &'a mut Vec<&'b str>) -> Value {
+fn proc_bool_null<'a, 'b>(
+    toker: &'a mut Tokenizer<'b>,
+    _is_key: bool,
+    is_key_matched: bool,
+    _keyword: &Regex,
+    regex: &Regex,
+    ret: &'a mut Vec<&'b str>,
+) -> Value {
     let step_n;
     if toker.ch.as_ref().unwrap().ch == 't' || toker.ch.as_ref().unwrap().ch == 'n' {
         step_n = 4;
@@ -59,7 +78,7 @@ fn proc_bool_null<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_ma
     }
     let pos_range = toker.get_str_token();
     if is_key_matched {
-        for m in regex.find_iter(&toker.s[pos_range.start..pos_range.end+1]) {
+        for m in regex.find_iter(&toker.s[pos_range.start..pos_range.end + 1]) {
             let caps = m.as_str().trim();
             ret.push(caps);
         }
@@ -67,7 +86,14 @@ fn proc_bool_null<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_ma
     return Value::string(pos_range);
 }
 
-fn proc_number<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_matched: bool, _keyword: &Regex, regex: &Regex, ret: &'a mut Vec<&'b str>) -> Value {
+fn proc_number<'a, 'b>(
+    toker: &'a mut Tokenizer<'b>,
+    _is_key: bool,
+    is_key_matched: bool,
+    _keyword: &Regex,
+    regex: &Regex,
+    ret: &'a mut Vec<&'b str>,
+) -> Value {
     toker.skip_bc();
     if toker.ch.as_ref().unwrap().ch == '-' {
         toker.concat();
@@ -110,7 +136,7 @@ fn proc_number<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_match
 
     let pos_range = toker.get_str_token();
     if is_key_matched {
-        for m in regex.find_iter(&toker.s[pos_range.start..pos_range.end+1]) {
+        for m in regex.find_iter(&toker.s[pos_range.start..pos_range.end + 1]) {
             let caps = m.as_str().trim();
             ret.push(caps);
         }
@@ -118,7 +144,14 @@ fn proc_number<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_match
     Value::string(pos_range)
 }
 
-fn proc_array<'a, 'b>(toker: &'a mut Tokenizer<'b>, is_key: bool, is_key_matched: bool, keyword: &'a Regex, regex: &'a Regex, ret: &'a mut Vec<&'b str>) -> Value {
+fn proc_array<'a, 'b>(
+    toker: &'a mut Tokenizer<'b>,
+    is_key: bool,
+    is_key_matched: bool,
+    keyword: &'a Regex,
+    regex: &'a Regex,
+    ret: &'a mut Vec<&'b str>,
+) -> Value {
     toker.get_char();
     toker.skip_bc();
     if toker.ch.as_ref().unwrap().ch == ']' {
@@ -139,7 +172,14 @@ fn proc_array<'a, 'b>(toker: &'a mut Tokenizer<'b>, is_key: bool, is_key_matched
     Value::Array(arr)
 }
 
-fn proc_string<'a, 'b>(toker: &'a mut Tokenizer<'b>, is_key: bool, is_key_matched: bool, _keyword: &Regex, regex: &Regex, ret: &'a mut Vec<&'b str>) -> Value {
+fn proc_string<'a, 'b>(
+    toker: &'a mut Tokenizer<'b>,
+    is_key: bool,
+    is_key_matched: bool,
+    _keyword: &Regex,
+    regex: &Regex,
+    ret: &'a mut Vec<&'b str>,
+) -> Value {
     toker.get_char();
     if toker.ch.as_ref().unwrap().ch == '"' {
         let offset = toker.ch.as_ref().unwrap().offset;
@@ -158,7 +198,11 @@ fn proc_string<'a, 'b>(toker: &'a mut Tokenizer<'b>, is_key: bool, is_key_matche
     toker.get_char();
     let pos_range = toker.get_str_token();
     if !is_key_matched && !is_key {
-        for m in regex.find_iter(&toker.s[pos_range.start..pos_range.end+1]) {
+        let mut end = pos_range.end + 1;
+        while !toker.s.is_char_boundary(end) {
+            end += 1;
+        }
+        for m in regex.find_iter(&toker.s[pos_range.start..end]) {
             let caps = m.as_str().trim();
             ret.push(caps);
         }
@@ -166,7 +210,14 @@ fn proc_string<'a, 'b>(toker: &'a mut Tokenizer<'b>, is_key: bool, is_key_matche
     Value::string(pos_range)
 }
 
-fn proc_object<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_matched: bool, keyword: &Regex, regex: &Regex, ret: &'a mut Vec<&'b str>) -> Value {
+fn proc_object<'a, 'b>(
+    toker: &'a mut Tokenizer<'b>,
+    _is_key: bool,
+    is_key_matched: bool,
+    keyword: &Regex,
+    regex: &Regex,
+    ret: &'a mut Vec<&'b str>,
+) -> Value {
     toker.get_char();
     toker.skip_bc();
     if toker.ch.as_ref().unwrap().ch == '}' {
@@ -183,7 +234,11 @@ fn proc_object<'a, 'b>(toker: &'a mut Tokenizer<'b>, _is_key: bool, is_key_match
         };
         let mut is_match = false;
         if !is_key_matched && key.start != key.end {
-            if keyword.is_match(&toker.s[key.start..key.end+1]) {
+            let mut end = key.end + 1;
+            while !toker.s.is_char_boundary(end) {
+                end += 1;
+            }
+            if keyword.is_match(&toker.s[key.start..end]) {
                 is_match = true;
             }
         }
