@@ -1,0 +1,5 @@
+[toolchain]
+# TODO: we can remove this toolchain file when TAIT hits stable.
+# Related issue: https://github.com/rust-lang/rust/issues/63063.
+channel = "1.76"
+date = "2023-05-23"

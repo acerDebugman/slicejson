@@ -7,6 +7,7 @@ use crate::{
 use std::collections::HashMap;
 
 
+/// 解析函数,用于解析json
 pub fn parse<'a>(s: &'a str) -> Value {
     //continuous empty string
     if s.is_empty() {
