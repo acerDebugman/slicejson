@@ -1,6 +1,6 @@
 [package]
 name = "slicejson"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "parse json through string slice,try to make it faster!"
 license = "MIT OR Apache-2.0"
