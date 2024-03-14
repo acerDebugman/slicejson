@@ -13,6 +13,7 @@ pub fn parse<'a>(s: &'a str) -> Value {
     if s.is_empty() {
         return Value::default();
     }
+    println!("[for test]test parse json");
     let mut toker = tokenizer::Tokenizer::new(s);
     toker.get_char();
     process(&mut toker)
